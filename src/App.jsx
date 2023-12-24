@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import ReadNotes from './components/ReadNotes';
-
+import CreateNote from './components/CreateNote';
+import EditNote from './components/EditNote';
+import DeleteNote from './components/DeleteNote';
 function App() {
-
   // define states
   const [notes, setNotes] = useState([]);
   const [showStatus, setShowStatus] = useState('all');
@@ -24,12 +25,18 @@ function App() {
   }
 
   useEffect(() => {
-    // newNoteContentRef.current.focus();
+    let isMounted = true;
+
+    if (isMounted) {
+      fetchNotes();
+    }
+
+    return () => {
+      isMounted = false;
+    }
+
   }, []);
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
   const addNote = (event) => {
     event.preventDefault();
     // create a new note object
@@ -54,26 +61,27 @@ function App() {
     // console.log(event.target.value);
     setShowStatus(event.target.value);
   }
-
   const padding = {
-    padding: 15,
+    paddingRight: 15,
   };
-
   return (
     <Router>
-
       <div>
-        <Link to="/" >Dashboard</Link>
+        <Link to="/" style={padding}>Dashboard</Link>
         <Link to="/read" style={padding}>Read Notes</Link>
+        <Link to="/create" style={padding}>Create Note</Link>
+        <Link to="/editNote" style={padding}>Edit Note</Link>
+        <Link to="/deleteNote" style={padding}>Delete Note</Link>
       </div>
-
       <Routes>
         <Route path='/' element={<Dashboard />} />
-        <Route path='/read' element={<ReadNotes showStatus={showStatus} handleStatusChange={handleStatusChange} notes={ notes } /> } />
+        <Route path='/read' element={<ReadNotes showStatus={showStatus} handleStatusChange={handleStatusChange} notes={notes} />} />
+        <Route path='/create' element={<CreateNote addNote={addNote} newNoteContent={newNoteContent} newNoteImportant={newNoteImportant} newNoteContentRef={newNoteContentRef} setNewNoteContent={setNewNoteContent} setNewNoteImportant={setNewNoteImportant} />} />
+        <Route path='/editNote' element={<EditNote notes={notes} setNotes={ setNotes } />} />
+        <Route path='/deleteNote' element={<DeleteNote notes={notes} setNotes={setNotes}/>} />
       </Routes>
 
     </Router>
   )
 }
-
 export default App;
